@@ -1,0 +1,44 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 95.2 1.2 220;
+    --foreground: 17 1 250;
+    --card: 100 0 0;
+    --card-foreground: 17 1 250;
+    --popover: 100 0 0;
+    --popover-foreground: 17 1 250;
+    --primary: 50 0.12 232;
+    --primary-foreground: 100 0 0;
+    --secondary: 93 1.5 220;
+    --secondary-foreground: 17 1 250;
+    --muted: 93 1.5 220;
+    --muted-foreground: 52 2 250;
+    --accent: 50 0.12 232;
+    --accent-foreground: 100 0 0;
+    --destructive: 50 0.22 25;
+    --destructive-foreground: 100 0 0;
+    --border: 88 2 220;
+    --input: 88 2 220;
+    --ring: 50 0.12 232;
+    --radius: 0.5rem;
+
+    /* custom tokens */
+    --hero-from: 25 3 220;
+    --hero-to: 30 3 220;
+    --results-bg: 93 1.5 220;
+    --brand: 50 0.12 232;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
