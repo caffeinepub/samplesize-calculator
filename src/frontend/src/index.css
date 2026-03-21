@@ -17,7 +17,7 @@
     --secondary: 93 1.5 220;
     --secondary-foreground: 17 1 250;
     --muted: 93 1.5 220;
-    --muted-foreground: 52 2 250;
+    --muted-foreground: 38 1.5 250;
     --accent: 50 0.12 232;
     --accent-foreground: 100 0 0;
     --destructive: 50 0.22 25;
@@ -32,6 +32,8 @@
     --hero-to: 30 3 220;
     --results-bg: 93 1.5 220;
     --brand: 50 0.12 232;
+    --results-highlight-bg: 85 3.5 220;
+    --results-highlight-ring: 50 0.18 232;
   }
 
   * {
@@ -40,5 +42,11 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  input,
+  select,
+  textarea {
+    color: oklch(var(--foreground)) !important;
   }
 }

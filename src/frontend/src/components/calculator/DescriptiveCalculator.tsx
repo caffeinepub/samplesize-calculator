@@ -110,7 +110,9 @@ export function DescriptiveCalculator() {
 
   const populationField = (
     <div>
-      <Label className="text-sm font-semibold">Population Size (N)</Label>
+      <Label className="text-sm font-semibold text-foreground">
+        Population Size (N)
+      </Label>
       <p className="text-xs text-muted-foreground mb-1">
         Leave blank for infinite population
       </p>
@@ -140,14 +142,14 @@ export function DescriptiveCalculator() {
             <TabsTrigger
               value="proportion"
               data-ocid="descriptive.proportion.tab"
-              className="flex-1"
+              className="flex-1 text-white data-[state=inactive]:text-white"
             >
               Estimate a Proportion
             </TabsTrigger>
             <TabsTrigger
               value="mean"
               data-ocid="descriptive.mean.tab"
-              className="flex-1"
+              className="flex-1 text-white data-[state=inactive]:text-white"
             >
               Estimate a Mean
             </TabsTrigger>
@@ -155,7 +157,9 @@ export function DescriptiveCalculator() {
 
           <TabsContent value="proportion" className="space-y-4">
             <div>
-              <Label className="text-sm font-semibold">Confidence Level</Label>
+              <Label className="text-sm font-semibold text-foreground">
+                Confidence Level
+              </Label>
               <Select
                 value={confidenceLevel}
                 onValueChange={setConfidenceLevel}
@@ -174,7 +178,7 @@ export function DescriptiveCalculator() {
               </Select>
             </div>
             <div>
-              <Label className="text-sm font-semibold">
+              <Label className="text-sm font-semibold text-foreground">
                 Expected Proportion (p)
               </Label>
               <p className="text-xs text-muted-foreground mb-1">
@@ -192,7 +196,7 @@ export function DescriptiveCalculator() {
               />
             </div>
             <div>
-              <Label className="text-sm font-semibold">
+              <Label className="text-sm font-semibold text-foreground">
                 Margin of Error (d)
               </Label>
               <p className="text-xs text-muted-foreground mb-1">
@@ -214,7 +218,9 @@ export function DescriptiveCalculator() {
 
           <TabsContent value="mean" className="space-y-4">
             <div>
-              <Label className="text-sm font-semibold">Confidence Level</Label>
+              <Label className="text-sm font-semibold text-foreground">
+                Confidence Level
+              </Label>
               <Select
                 value={confidenceLevel}
                 onValueChange={setConfidenceLevel}
@@ -233,7 +239,7 @@ export function DescriptiveCalculator() {
               </Select>
             </div>
             <div>
-              <Label className="text-sm font-semibold">
+              <Label className="text-sm font-semibold text-foreground">
                 Expected Standard Deviation (sigma)
               </Label>
               <Input
@@ -247,7 +253,7 @@ export function DescriptiveCalculator() {
               />
             </div>
             <div>
-              <Label className="text-sm font-semibold">
+              <Label className="text-sm font-semibold text-foreground">
                 Margin of Error (d)
               </Label>
               <Input

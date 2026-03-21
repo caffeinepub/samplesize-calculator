@@ -12,7 +12,7 @@ export function Header() {
             <span className="text-xl font-bold text-foreground tracking-tight">
               Bio<span className="text-foreground">Size</span>
             </span>
-            <span className="text-[10px] text-muted-foreground font-medium tracking-wide">
+            <span className="text-sm text-muted-foreground font-medium tracking-wide">
               by Resilient Health Care Academy
             </span>
           </div>

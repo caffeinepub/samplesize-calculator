@@ -137,21 +137,21 @@ export function ClinicalTrialCalculator() {
             <TabsTrigger
               value="parallel"
               data-ocid="clinical.parallel.tab"
-              className="text-xs"
+              className="text-xs text-white data-[state=inactive]:text-white"
             >
               Superiority RCT
             </TabsTrigger>
             <TabsTrigger
               value="noninferiority"
               data-ocid="clinical.noninferiority.tab"
-              className="text-xs"
+              className="text-xs text-white data-[state=inactive]:text-white"
             >
               Non-Inferiority
             </TabsTrigger>
             <TabsTrigger
               value="crossover"
               data-ocid="clinical.crossover.tab"
-              className="text-xs"
+              className="text-xs text-white data-[state=inactive]:text-white"
             >
               Crossover
             </TabsTrigger>
@@ -159,7 +159,9 @@ export function ClinicalTrialCalculator() {
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <Label className="text-sm font-semibold">Confidence Level</Label>
+              <Label className="text-sm font-semibold text-foreground">
+                Confidence Level
+              </Label>
               <Select
                 value={confidenceLevel}
                 onValueChange={setConfidenceLevel}
@@ -178,7 +180,9 @@ export function ClinicalTrialCalculator() {
               </Select>
             </div>
             <div>
-              <Label className="text-sm font-semibold">Power</Label>
+              <Label className="text-sm font-semibold text-foreground">
+                Power
+              </Label>
               <Select value={power} onValueChange={setPower}>
                 <SelectTrigger
                   data-ocid="clinical.power.select"
@@ -224,7 +228,7 @@ export function ClinicalTrialCalculator() {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-sm font-semibold">
+                <Label className="text-sm font-semibold text-foreground">
                   {isContinuous ? "Mean (Control)" : "Proportion (Control)"}
                 </Label>
                 <Input
@@ -238,7 +242,7 @@ export function ClinicalTrialCalculator() {
                 />
               </div>
               <div>
-                <Label className="text-sm font-semibold">
+                <Label className="text-sm font-semibold text-foreground">
                   {isContinuous ? "Mean (Treatment)" : "Proportion (Treatment)"}
                 </Label>
                 <Input
@@ -254,7 +258,7 @@ export function ClinicalTrialCalculator() {
             </div>
             {isContinuous && (
               <div>
-                <Label className="text-sm font-semibold">
+                <Label className="text-sm font-semibold text-foreground">
                   Standard Deviation (SD)
                 </Label>
                 <Input
@@ -274,7 +278,7 @@ export function ClinicalTrialCalculator() {
           <TabsContent value="noninferiority" className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-sm font-semibold">
+                <Label className="text-sm font-semibold text-foreground">
                   Expected Mean (Control)
                 </Label>
                 <Input
@@ -288,7 +292,7 @@ export function ClinicalTrialCalculator() {
                 />
               </div>
               <div>
-                <Label className="text-sm font-semibold">
+                <Label className="text-sm font-semibold text-foreground">
                   Expected Mean (Treatment)
                 </Label>
                 <Input
@@ -303,7 +307,7 @@ export function ClinicalTrialCalculator() {
               </div>
             </div>
             <div>
-              <Label className="text-sm font-semibold">
+              <Label className="text-sm font-semibold text-foreground">
                 Standard Deviation (SD)
               </Label>
               <Input
@@ -318,7 +322,7 @@ export function ClinicalTrialCalculator() {
               />
             </div>
             <div>
-              <Label className="text-sm font-semibold">
+              <Label className="text-sm font-semibold text-foreground">
                 Non-Inferiority Margin (δ)
               </Label>
               <p className="text-xs text-muted-foreground mb-1">
@@ -339,7 +343,7 @@ export function ClinicalTrialCalculator() {
 
           <TabsContent value="crossover" className="space-y-3">
             <div>
-              <Label className="text-sm font-semibold">
+              <Label className="text-sm font-semibold text-foreground">
                 Expected Mean Difference (Δ)
               </Label>
               <Input
@@ -353,7 +357,7 @@ export function ClinicalTrialCalculator() {
               />
             </div>
             <div>
-              <Label className="text-sm font-semibold">
+              <Label className="text-sm font-semibold text-foreground">
                 Within-Subject Standard Deviation (σ_w)
               </Label>
               <Input

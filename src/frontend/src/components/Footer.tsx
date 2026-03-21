@@ -24,9 +24,9 @@ export function Footer() {
             Privacy
           </button>
         </div>
-        <p className="text-xs text-muted-foreground text-center">
+        <p className="text-sm text-muted-foreground text-center">
           Developed by{" "}
-          <span className="font-semibold text-foreground">
+          <span className="text-base font-semibold text-foreground">
             Resilient Health Care Academy
           </span>{" "}
           &nbsp;&middot;&nbsp; &copy; {year}. Built with ❤️ using{" "}

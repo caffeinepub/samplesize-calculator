@@ -132,21 +132,21 @@ export function AnalyticCalculator() {
             <TabsTrigger
               value="cohort"
               data-ocid="analytic.cohort.tab"
-              className="text-xs"
+              className="text-xs text-white data-[state=inactive]:text-white"
             >
               Cohort
             </TabsTrigger>
             <TabsTrigger
               value="casecontrol"
               data-ocid="analytic.casecontrol.tab"
-              className="text-xs"
+              className="text-xs text-white data-[state=inactive]:text-white"
             >
               Case-Control
             </TabsTrigger>
             <TabsTrigger
               value="means"
               data-ocid="analytic.means.tab"
-              className="text-xs"
+              className="text-xs text-white data-[state=inactive]:text-white"
             >
               Two Means
             </TabsTrigger>
@@ -155,7 +155,9 @@ export function AnalyticCalculator() {
           {/* Shared fields */}
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <Label className="text-sm font-semibold">Confidence Level</Label>
+              <Label className="text-sm font-semibold text-foreground">
+                Confidence Level
+              </Label>
               <Select
                 value={confidenceLevel}
                 onValueChange={setConfidenceLevel}
@@ -174,7 +176,9 @@ export function AnalyticCalculator() {
               </Select>
             </div>
             <div>
-              <Label className="text-sm font-semibold">Power</Label>
+              <Label className="text-sm font-semibold text-foreground">
+                Power
+              </Label>
               <Select value={power} onValueChange={setPower}>
                 <SelectTrigger
                   data-ocid="analytic.power.select"
@@ -194,7 +198,9 @@ export function AnalyticCalculator() {
           <TabsContent value="cohort" className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-sm font-semibold">P1 (Unexposed)</Label>
+                <Label className="text-sm font-semibold text-foreground">
+                  P1 (Unexposed)
+                </Label>
                 <Input
                   data-ocid="analytic.p1.input"
                   type="number"
@@ -208,7 +214,9 @@ export function AnalyticCalculator() {
                 />
               </div>
               <div>
-                <Label className="text-sm font-semibold">P2 (Exposed)</Label>
+                <Label className="text-sm font-semibold text-foreground">
+                  P2 (Exposed)
+                </Label>
                 <Input
                   data-ocid="analytic.p2.input"
                   type="number"
@@ -223,7 +231,7 @@ export function AnalyticCalculator() {
               </div>
             </div>
             <div>
-              <Label className="text-sm font-semibold">
+              <Label className="text-sm font-semibold text-foreground">
                 Controls : Cases Ratio
               </Label>
               <Input
@@ -241,7 +249,7 @@ export function AnalyticCalculator() {
 
           <TabsContent value="casecontrol" className="space-y-3">
             <div>
-              <Label className="text-sm font-semibold">
+              <Label className="text-sm font-semibold text-foreground">
                 Proportion Exposed Among Controls
               </Label>
               <Input
@@ -257,7 +265,9 @@ export function AnalyticCalculator() {
               />
             </div>
             <div>
-              <Label className="text-sm font-semibold">Odds Ratio (OR)</Label>
+              <Label className="text-sm font-semibold text-foreground">
+                Odds Ratio (OR)
+              </Label>
               <Input
                 data-ocid="analytic.or.input"
                 type="number"
@@ -270,7 +280,7 @@ export function AnalyticCalculator() {
               />
             </div>
             <div>
-              <Label className="text-sm font-semibold">
+              <Label className="text-sm font-semibold text-foreground">
                 Controls : Cases Ratio
               </Label>
               <Input
@@ -289,7 +299,9 @@ export function AnalyticCalculator() {
           <TabsContent value="means" className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <Label className="text-sm font-semibold">Mean 1</Label>
+                <Label className="text-sm font-semibold text-foreground">
+                  Mean 1
+                </Label>
                 <Input
                   data-ocid="analytic.mean1.input"
                   type="number"
@@ -301,7 +313,9 @@ export function AnalyticCalculator() {
                 />
               </div>
               <div>
-                <Label className="text-sm font-semibold">Mean 2</Label>
+                <Label className="text-sm font-semibold text-foreground">
+                  Mean 2
+                </Label>
                 <Input
                   data-ocid="analytic.mean2.input"
                   type="number"
@@ -314,7 +328,9 @@ export function AnalyticCalculator() {
               </div>
             </div>
             <div>
-              <Label className="text-sm font-semibold">Pooled SD</Label>
+              <Label className="text-sm font-semibold text-foreground">
+                Pooled SD
+              </Label>
               <Input
                 data-ocid="analytic.sd.input"
                 type="number"

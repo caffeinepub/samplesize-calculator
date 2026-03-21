@@ -226,7 +226,9 @@ export function ClusterRctCalculator() {
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <Label className="text-sm font-semibold">Confidence Level</Label>
+              <Label className="text-sm font-semibold text-foreground">
+                Confidence Level
+              </Label>
               <Select
                 value={confidenceLevel}
                 onValueChange={setConfidenceLevel}
@@ -245,7 +247,9 @@ export function ClusterRctCalculator() {
               </Select>
             </div>
             <div>
-              <Label className="text-sm font-semibold">Power</Label>
+              <Label className="text-sm font-semibold text-foreground">
+                Power
+              </Label>
               <Select value={power} onValueChange={setPower}>
                 <SelectTrigger
                   data-ocid="cluster.power.select"
@@ -269,14 +273,19 @@ export function ClusterRctCalculator() {
               setResult(null);
             }}
           >
-            <TabsList className="mb-4 w-full grid grid-cols-2">
+            <TabsList className="mb-4 w-full grid grid-cols-2 bg-blue-900">
               <TabsTrigger
                 value="continuous"
                 data-ocid="cluster.continuous.tab"
+                className="text-white data-[state=inactive]:text-white"
               >
                 Continuous
               </TabsTrigger>
-              <TabsTrigger value="binary" data-ocid="cluster.binary.tab">
+              <TabsTrigger
+                value="binary"
+                data-ocid="cluster.binary.tab"
+                className="text-white data-[state=inactive]:text-white"
+              >
                 Binary
               </TabsTrigger>
             </TabsList>
@@ -284,7 +293,7 @@ export function ClusterRctCalculator() {
             <TabsContent value="continuous" className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-sm font-semibold">
+                  <Label className="text-sm font-semibold text-foreground">
                     Mean (Control)
                   </Label>
                   <Input
@@ -298,7 +307,7 @@ export function ClusterRctCalculator() {
                   />
                 </div>
                 <div>
-                  <Label className="text-sm font-semibold">
+                  <Label className="text-sm font-semibold text-foreground">
                     Mean (Treatment)
                   </Label>
                   <Input
@@ -313,7 +322,7 @@ export function ClusterRctCalculator() {
                 </div>
               </div>
               <div>
-                <Label className="text-sm font-semibold">
+                <Label className="text-sm font-semibold text-foreground">
                   Standard Deviation (SD)
                 </Label>
                 <Input
@@ -329,7 +338,9 @@ export function ClusterRctCalculator() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-sm font-semibold">ICC / ρ</Label>
+                  <Label className="text-sm font-semibold text-foreground">
+                    ICC / ρ
+                  </Label>
                   <Input
                     data-ocid="cluster.rho.input"
                     type="number"
@@ -343,7 +354,7 @@ export function ClusterRctCalculator() {
                   />
                 </div>
                 <div>
-                  <Label className="text-sm font-semibold">
+                  <Label className="text-sm font-semibold text-foreground">
                     Cluster Size (m)
                   </Label>
                   <Input
@@ -363,7 +374,7 @@ export function ClusterRctCalculator() {
             <TabsContent value="binary" className="space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-sm font-semibold">
+                  <Label className="text-sm font-semibold text-foreground">
                     Proportion (Control)
                   </Label>
                   <Input
@@ -379,7 +390,7 @@ export function ClusterRctCalculator() {
                   />
                 </div>
                 <div>
-                  <Label className="text-sm font-semibold">
+                  <Label className="text-sm font-semibold text-foreground">
                     Proportion (Treatment)
                   </Label>
                   <Input
@@ -397,7 +408,9 @@ export function ClusterRctCalculator() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <Label className="text-sm font-semibold">ICC / ρ</Label>
+                  <Label className="text-sm font-semibold text-foreground">
+                    ICC / ρ
+                  </Label>
                   <Input
                     data-ocid="cluster.rho_b.input"
                     type="number"
@@ -411,7 +424,7 @@ export function ClusterRctCalculator() {
                   />
                 </div>
                 <div>
-                  <Label className="text-sm font-semibold">
+                  <Label className="text-sm font-semibold text-foreground">
                     Cluster Size (m)
                   </Label>
                   <Input

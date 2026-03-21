@@ -21,15 +21,28 @@ export function ResultsPanel({
     perGroupLabel ??
     (perGroup ? "participants per group" : "total participants");
 
+  const hasResult = resultN !== null;
+
   return (
     <div className="flex flex-col gap-4 h-full">
       {/* Big number */}
       <div
-        className="rounded-xl p-6 text-center"
-        style={{ background: "oklch(93% 1.5% 220)" }}
+        className={`rounded-xl p-6 text-center transition-all duration-300 ${
+          hasResult ? "ring-2 shadow-md" : ""
+        }`}
+        style={{
+          background: hasResult ? "oklch(88% 4% 220)" : "oklch(93% 1.5% 220)",
+          boxShadow: hasResult
+            ? "0 0 0 2px oklch(50% 0.18 232 / 0.5), 0 4px 16px oklch(50% 0.12 232 / 0.15)"
+            : undefined,
+        }}
         data-ocid="results.panel"
       >
-        <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1">
+        <p
+          className={`text-xs font-semibold uppercase tracking-widest mb-1 transition-colors duration-300 ${
+            hasResult ? "text-foreground" : "text-muted-foreground"
+          }`}
+        >
           Required Sample Size
         </p>
         {isLoading ? (
@@ -39,15 +52,21 @@ export function ResultsPanel({
           >
             <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : resultN !== null ? (
+        ) : hasResult ? (
           <>
             <p
-              className="text-6xl font-bold text-foreground leading-none"
+              className="text-6xl font-bold leading-none transition-all duration-300"
+              style={{ color: "oklch(20% 0.15 232)" }}
               data-ocid="results.success_state"
             >
-              {resultN.toLocaleString()}
+              {resultN!.toLocaleString()}
             </p>
-            <p className="text-sm text-muted-foreground mt-2">{groupLabel}</p>
+            <p
+              className="text-sm font-medium mt-2"
+              style={{ color: "oklch(35% 0.12 232)" }}
+            >
+              {groupLabel}
+            </p>
           </>
         ) : (
           <p
@@ -62,7 +81,7 @@ export function ResultsPanel({
       {/* Formula components */}
       {components && components.length > 0 && (
         <div className="bg-white border border-border rounded-xl p-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-3">
+          <p className="text-xs font-semibold uppercase tracking-widest text-foreground mb-3">
             Formula Components
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -81,10 +100,10 @@ export function ResultsPanel({
         </div>
       )}
 
-      {/* Methodology */}
+      {/* Formula */}
       {formula && (
         <div className="bg-white border border-border rounded-xl p-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+          <p className="text-xs font-semibold uppercase tracking-widest text-foreground mb-2">
             Formula
           </p>
           <p className="font-mono text-sm text-foreground bg-background rounded p-2">
@@ -93,9 +112,10 @@ export function ResultsPanel({
         </div>
       )}
 
+      {/* Methodology */}
       {methodology && (
         <div className="bg-white border border-border rounded-xl p-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">
+          <p className="text-xs font-semibold uppercase tracking-widest text-foreground mb-2">
             Methodology & Assumptions
           </p>
           <p className="text-sm text-muted-foreground leading-relaxed">
