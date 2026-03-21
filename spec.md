@@ -1,33 +1,24 @@
 # SampleSize Calculator
 
 ## Current State
-New project. No existing application files.
+Three study categories: Descriptive, Analytic, Clinical Trials. No cluster RCT support.
 
 ## Requested Changes (Diff)
 
 ### Add
-- Sample size calculator for three study types: Descriptive, Analytic, and Clinical Trial
-- Each study type supports multiple sub-types/formulas
-- Results display with formula details and methodology notes
+- New category "Cluster RCT" as fourth pill in HeroBand
+- ClusterRctCalculator with Continuous and Binary tabs
+- DEFF = 1+(m-1)*rho applied to simple n
+- Results: n/arm and clusters/arm
 
 ### Modify
-- N/A (new project)
+- HeroBand.tsx: add fourth pill
+- App.tsx: handle cluster category
 
 ### Remove
-- N/A (new project)
+- Nothing
 
 ## Implementation Plan
-
-### Backend (Motoko)
-- `calculateDescriptive`: Sample size for estimating a proportion (z-based) and estimating a mean
-- `calculateAnalytic`: Sample size for comparing two proportions (cohort/cross-sectional, case-control) and comparing two means
-- `calculateClinicalTrial`: Sample size for parallel RCT (superiority, non-inferiority) and crossover trial
-- All functions return calculated sample size + formula components (z-scores, effect size, etc.)
-- Save recent calculations to stable storage
-
-### Frontend
-- Three-tab layout: Descriptive Studies | Analytic Studies | Clinical Trials
-- Each tab has sub-type selector and dynamic form fields
-- Results panel shows calculated n, formula breakdown, methodology notes
-- Recent calculations list
-- Responsive, professional medical/research aesthetic
+1. Add cluster formula functions to sampleSizeFormulas.ts
+2. Create ClusterRctCalculator.tsx
+3. Update HeroBand and App

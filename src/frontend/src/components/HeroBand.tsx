@@ -1,4 +1,4 @@
-type StudyCategory = "descriptive" | "analytic" | "clinical";
+type StudyCategory = "descriptive" | "analytic" | "clinical" | "cluster";
 
 interface HeroBandProps {
   activeStudy: StudyCategory;
@@ -9,6 +9,7 @@ const PILLS: { id: StudyCategory; label: string }[] = [
   { id: "descriptive", label: "Descriptive Studies" },
   { id: "analytic", label: "Analytic Studies" },
   { id: "clinical", label: "Clinical Trials" },
+  { id: "cluster", label: "Cluster RCT" },
 ];
 
 export function HeroBand({ activeStudy, onStudyChange }: HeroBandProps) {
@@ -27,7 +28,7 @@ export function HeroBand({ activeStudy, onStudyChange }: HeroBandProps) {
         <p className="text-white/70 text-sm mb-8">
           Evidence-based calculations for research &amp; clinical studies
         </p>
-        <div className="inline-flex items-center gap-1 p-1 rounded-full bg-white/10 backdrop-blur">
+        <div className="inline-flex flex-wrap justify-center items-center gap-1 p-1 rounded-full bg-white/10 backdrop-blur">
           {PILLS.map((pill) => (
             <button
               key={pill.id}

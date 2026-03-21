@@ -11,6 +11,7 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StudyType, SubType, useSaveCalculation } from "@/hooks/useQueries";
 import {
+  applyFPC,
   calcEstimateMean,
   calcEstimateProportion,
   getZAlpha,
@@ -24,9 +25,14 @@ export function DescriptiveCalculator() {
   const [p, setP] = useState("");
   const [d, setD] = useState("");
   const [sigma, setSigma] = useState("");
+  const [population, setPopulation] = useState("");
   const [result, setResult] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const save = useSaveCalculation();
+
+  const parsedN =
+    population.trim() !== "" ? Number.parseInt(population, 10) : null;
+  const hasFPC = parsedN !== null && !Number.isNaN(parsedN) && parsedN > 0;
 
   function handleCalculate() {
     setLoading(true);
@@ -46,14 +52,18 @@ export function DescriptiveCalculator() {
         )
           return;
         n = calcEstimateProportion(confidenceLevel, pv, dv);
+        if (hasFPC) n = applyFPC(n, parsedN as number);
         desc = `CL=${confidenceLevel}%, p=${pv}, d=${dv}`;
+        if (hasFPC) desc += `, N=${parsedN}`;
         st = SubType.estimateProportion;
       } else {
         const sv = Number.parseFloat(sigma);
         const dv = Number.parseFloat(d);
         if (Number.isNaN(sv) || Number.isNaN(dv) || sv <= 0 || dv <= 0) return;
         n = calcEstimateMean(confidenceLevel, sv, dv);
-        desc = `CL=${confidenceLevel}%, σ=${sv}, d=${dv}`;
+        if (hasFPC) n = applyFPC(n, parsedN as number);
+        desc = `CL=${confidenceLevel}%, sigma=${sv}, d=${dv}`;
+        if (hasFPC) desc += `, N=${parsedN}`;
         st = SubType.estimateMean;
       }
       setResult(n);
@@ -72,21 +82,49 @@ export function DescriptiveCalculator() {
   const components =
     result !== null
       ? [
-          { label: "z(α/2)", value: za },
+          { label: "z(alpha/2)", value: za },
           subType === "proportion"
             ? { label: "p", value: p }
-            : { label: "σ", value: sigma },
+            : { label: "sigma", value: sigma },
           { label: "d (margin)", value: d },
+          ...(hasFPC ? [{ label: "N (population)", value: population }] : []),
           { label: "n", value: String(result) },
         ]
       : [];
 
-  const formula =
-    subType === "proportion" ? "n = z² × p × (1-p) / d²" : "n = z² × σ² / d²";
-  const methodology =
+  const baseFormula =
+    subType === "proportion"
+      ? "n = z^2 x p x (1-p) / d^2"
+      : "n = z^2 x sigma^2 / d^2";
+  const formula = hasFPC
+    ? `${baseFormula}  ->  n_adj = n / (1 + (n-1)/N)`
+    : baseFormula;
+
+  const baseMethodology =
     subType === "proportion"
       ? "Uses the Cochran (1977) formula for estimating a single proportion. Assumes a simple random sample with normal approximation. Requires p (expected proportion) and d (acceptable margin of error)."
-      : "Uses the formula for estimating a population mean. Requires σ (population/pilot standard deviation) and d (margin of error). Normal approximation is assumed.";
+      : "Uses the formula for estimating a population mean. Requires sigma (population/pilot standard deviation) and d (margin of error). Normal approximation is assumed.";
+  const methodology = hasFPC
+    ? `${baseMethodology} Finite Population Correction (FPC) applied: n_adj = n / (1 + (n-1)/N) for population N=${parsedN}.`
+    : baseMethodology;
+
+  const populationField = (
+    <div>
+      <Label className="text-sm font-semibold">Population Size (N)</Label>
+      <p className="text-xs text-muted-foreground mb-1">
+        Leave blank for infinite population
+      </p>
+      <Input
+        data-ocid="descriptive.population.input"
+        type="number"
+        min="1"
+        step="1"
+        placeholder="e.g. 1000"
+        value={population}
+        onChange={(e) => setPopulation(e.target.value)}
+      />
+    </div>
+  );
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -158,7 +196,7 @@ export function DescriptiveCalculator() {
                 Margin of Error (d)
               </Label>
               <p className="text-xs text-muted-foreground mb-1">
-                Acceptable margin as proportion (e.g. 0.05 = ±5%)
+                Acceptable margin as proportion (e.g. 0.05 = +/-5%)
               </p>
               <Input
                 data-ocid="descriptive.margin.input"
@@ -171,6 +209,7 @@ export function DescriptiveCalculator() {
                 onChange={(e) => setD(e.target.value)}
               />
             </div>
+            {populationField}
           </TabsContent>
 
           <TabsContent value="mean" className="space-y-4">
@@ -195,7 +234,7 @@ export function DescriptiveCalculator() {
             </div>
             <div>
               <Label className="text-sm font-semibold">
-                Expected Standard Deviation (σ)
+                Expected Standard Deviation (sigma)
               </Label>
               <Input
                 data-ocid="descriptive.sigma.input"
@@ -221,6 +260,7 @@ export function DescriptiveCalculator() {
                 onChange={(e) => setD(e.target.value)}
               />
             </div>
+            {populationField}
           </TabsContent>
         </Tabs>
 

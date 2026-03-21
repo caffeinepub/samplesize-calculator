@@ -53,10 +53,10 @@ export function ClinicalTrialCalculator() {
           const sdv = Number.parseFloat(sd);
           if (Number.isNaN(sdv)) return;
           n = calcParallelRctContinuous(confidenceLevel, power, v1, v2, sdv);
-          desc = `RCT continuous: CL=${confidenceLevel}%, Power=${power}%, M1=${v1}, M2=${v2}, SD=${sdv}`;
+          desc = `Superiority RCT (continuous): CL=${confidenceLevel}%, Power=${power}%, M1=${v1}, M2=${v2}, SD=${sdv}`;
         } else {
           n = calcParallelRctProportion(confidenceLevel, power, v1, v2);
-          desc = `RCT proportion: CL=${confidenceLevel}%, Power=${power}%, P1=${v1}, P2=${v2}`;
+          desc = `Superiority RCT (proportion): CL=${confidenceLevel}%, Power=${power}%, P1=${v1}, P2=${v2}`;
         }
         st = SubType.parallelRct;
       } else if (sub === "noninferiority") {
@@ -72,14 +72,14 @@ export function ClinicalTrialCalculator() {
         )
           return;
         n = calcNonInferiority(confidenceLevel, power, v1, v2, sdv, dv);
-        desc = `Non-inferiority: CL=${confidenceLevel}%, Power=${power}%, δ=${dv}`;
+        desc = `Non-inferiority: CL=${confidenceLevel}%, Power=${power}%, delta=${dv}`;
         st = SubType.nonInferiorityTrial;
       } else {
         const md = Number.parseFloat(meanDiff);
         const ws = Number.parseFloat(withinSD);
         if (Number.isNaN(md) || Number.isNaN(ws)) return;
         n = calcCrossover(confidenceLevel, power, md, ws);
-        desc = `Crossover: CL=${confidenceLevel}%, Power=${power}%, Δ=${md}, withinSD=${ws}`;
+        desc = `Crossover: CL=${confidenceLevel}%, Power=${power}%, diff=${md}, withinSD=${ws}`;
         st = SubType.crossoverTrial;
       }
       setResult(n);
@@ -108,18 +108,19 @@ export function ClinicalTrialCalculator() {
 
   const formulas: Record<Sub, string> = {
     parallel: isContinuous
-      ? "n = 2(zα+zβ)²×SD² / (μ1-μ2)² per arm"
-      : "n = [zα√(2p̄(1-p̄))+zβ√(p1(1-p1)+p2(1-p2))]² / (p1-p2)² per arm",
-    noninferiority: "n = 2(zα+zβ)²×SD² / (δ-|μ1-μ2|)² per arm",
-    crossover: "n = 2(zα+zβ)²×σ_w² / Δ² per sequence",
+      ? "n = 2(zα/2 + zβ)² × SD² / (μ₁ - μ₂)²  per arm"
+      : "n = [zα/2·√(2p̅(1-p̅)) + zβ·√(p₁(1-p₁)+p₂(1-p₂))]² / (p₁-p₂)²  per arm",
+    noninferiority:
+      "n = 2(zα + zβ)² × SD² / (δ - |μ₁ - μ₂|)²  per arm  (one-sided α)",
+    crossover: "n = 2(zα/2 + zβ)² × σ_w² / Δ²  per sequence",
   };
   const methodologies: Record<Sub, string> = {
     parallel:
-      "Two-arm parallel group RCT superiority design. Toggle between continuous outcome (t-test power formula) and binary outcome (proportion comparison). Each arm receives n participants.",
+      "Two-arm parallel superiority RCT (two-sided test). Tests whether treatment differs from control. Formula uses z\u03b1/2 (two-sided critical value: 1.96 for 95% confidence). Continuous outcome uses the pooled-variance z-test power formula; binary outcome uses the two-proportion z-test. n is per arm.",
     noninferiority:
-      "Non-inferiority design: tests whether experimental treatment is not worse than control by more than margin δ. Uses one-sided testing convention with the non-inferiority margin.",
+      "Non-inferiority design: tests that the experimental treatment is not worse than control by more than margin \u03b4 (one-sided test). z\u03b1 uses one-sided alpha convention (e.g. 95% confidence \u2192 z = 1.96 for one-sided \u03b1 = 0.025). n is per arm.",
     crossover:
-      "Two-period crossover design. Uses within-subject standard deviation (σ_w) which is typically smaller than between-subject SD, leading to more efficient designs.",
+      "Two-period crossover design. Uses within-subject standard deviation (\u03c3_w), typically smaller than between-subject SD, leading to more efficient designs. Formula uses z\u03b1/2 (two-sided). n is per sequence arm.",
   };
 
   return (
@@ -138,7 +139,7 @@ export function ClinicalTrialCalculator() {
               data-ocid="clinical.parallel.tab"
               className="text-xs"
             >
-              Parallel RCT
+              Superiority RCT
             </TabsTrigger>
             <TabsTrigger
               value="noninferiority"

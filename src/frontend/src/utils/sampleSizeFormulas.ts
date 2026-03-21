@@ -40,6 +40,15 @@ export function calcEstimateMean(
   return Math.ceil((z ** 2 * sigma ** 2) / d ** 2);
 }
 
+/**
+ * Finite Population Correction (FPC)
+ * Adjusts sample size for a known finite population of size N.
+ */
+export function applyFPC(n: number, N: number): number {
+  if (N <= 0 || n >= N) return n;
+  return Math.ceil(n / (1 + (n - 1) / N));
+}
+
 // ---- ANALYTIC ----
 
 export function calcCompareTwoProportionsCohort(
@@ -151,4 +160,51 @@ export function calcCrossover(
   const za = getZAlpha(confidenceLevel);
   const zb = getZBeta(power);
   return Math.ceil((2 * (za + zb) ** 2 * withinSD ** 2) / meanDiff ** 2);
+}
+
+// ---- CLUSTER RCT ----
+
+/**
+ * Design effect for cluster RCT
+ * DEFF = 1 + (m - 1) * rho
+ */
+export function clusterDeff(m: number, rho: number): number {
+  return 1 + (m - 1) * rho;
+}
+
+export function calcClusterRctContinuous(
+  confidenceLevel: string,
+  power: string,
+  mean1: number,
+  mean2: number,
+  sd: number,
+  rho: number,
+  clusterSize: number,
+): { nPerArm: number; clustersPerArm: number } {
+  const nSimple = calcParallelRctContinuous(
+    confidenceLevel,
+    power,
+    mean1,
+    mean2,
+    sd,
+  );
+  const deff = clusterDeff(clusterSize, rho);
+  const nPerArm = Math.ceil(nSimple * deff);
+  const clustersPerArm = Math.ceil(nPerArm / clusterSize);
+  return { nPerArm, clustersPerArm };
+}
+
+export function calcClusterRctProportion(
+  confidenceLevel: string,
+  power: string,
+  p1: number,
+  p2: number,
+  rho: number,
+  clusterSize: number,
+): { nPerArm: number; clustersPerArm: number } {
+  const nSimple = calcParallelRctProportion(confidenceLevel, power, p1, p2);
+  const deff = clusterDeff(clusterSize, rho);
+  const nPerArm = Math.ceil(nSimple * deff);
+  const clustersPerArm = Math.ceil(nPerArm / clusterSize);
+  return { nPerArm, clustersPerArm };
 }

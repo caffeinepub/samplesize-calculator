@@ -1,6 +1,7 @@
 interface ResultsPanelProps {
   resultN: number | null;
   perGroup?: boolean;
+  perGroupLabel?: string;
   formula?: string;
   methodology?: string;
   components?: { label: string; value: string }[];
@@ -10,11 +11,16 @@ interface ResultsPanelProps {
 export function ResultsPanel({
   resultN,
   perGroup = false,
+  perGroupLabel,
   formula,
   methodology,
   components,
   isLoading,
 }: ResultsPanelProps) {
+  const groupLabel =
+    perGroupLabel ??
+    (perGroup ? "participants per group" : "total participants");
+
   return (
     <div className="flex flex-col gap-4 h-full">
       {/* Big number */}
@@ -41,9 +47,7 @@ export function ResultsPanel({
             >
               {resultN.toLocaleString()}
             </p>
-            <p className="text-sm text-muted-foreground mt-2">
-              {perGroup ? "participants per group" : "total participants"}
-            </p>
+            <p className="text-sm text-muted-foreground mt-2">{groupLabel}</p>
           </>
         ) : (
           <p

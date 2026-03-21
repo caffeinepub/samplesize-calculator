@@ -7,9 +7,10 @@ import { HeroBand } from "./components/HeroBand";
 import { RecentCalculations } from "./components/RecentCalculations";
 import { AnalyticCalculator } from "./components/calculator/AnalyticCalculator";
 import { ClinicalTrialCalculator } from "./components/calculator/ClinicalTrialCalculator";
+import { ClusterRctCalculator } from "./components/calculator/ClusterRctCalculator";
 import { DescriptiveCalculator } from "./components/calculator/DescriptiveCalculator";
 
-type StudyCategory = "descriptive" | "analytic" | "clinical";
+type StudyCategory = "descriptive" | "analytic" | "clinical" | "cluster";
 
 const STUDY_TITLES: Record<StudyCategory, { title: string; subtitle: string }> =
   {
@@ -27,6 +28,11 @@ const STUDY_TITLES: Record<StudyCategory, { title: string; subtitle: string }> =
       title: "Clinical Trials",
       subtitle:
         "Calculate sample size for randomized and controlled trial designs",
+    },
+    cluster: {
+      title: "Cluster Randomised Trial",
+      subtitle:
+        "Calculate sample size accounting for intracluster correlation (ICC)",
     },
   };
 
@@ -56,6 +62,7 @@ export default function App() {
           {activeStudy === "descriptive" && <DescriptiveCalculator />}
           {activeStudy === "analytic" && <AnalyticCalculator />}
           {activeStudy === "clinical" && <ClinicalTrialCalculator />}
+          {activeStudy === "cluster" && <ClusterRctCalculator />}
         </div>
 
         {/* Below calculator */}
