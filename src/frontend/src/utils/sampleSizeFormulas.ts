@@ -106,6 +106,35 @@ export function calcCompareTwoMeans(
 
 // ---- CLINICAL TRIALS ----
 
+export function calcOneSampleMean(
+  confidenceLevel: string,
+  power: string,
+  mu0: number,
+  mu1: number,
+  sigma: number,
+): number {
+  const za = getZAlpha(confidenceLevel);
+  const zb = getZBeta(power);
+  const delta = Math.abs(mu1 - mu0);
+  if (delta === 0 || sigma === 0) return 0;
+  return Math.ceil(((za + zb) ** 2 * sigma ** 2) / delta ** 2);
+}
+
+export function calcOneSampleProportion(
+  confidenceLevel: string,
+  power: string,
+  p0: number,
+  p1: number,
+): number {
+  const za = getZAlpha(confidenceLevel);
+  const zb = getZBeta(power);
+  const delta = Math.abs(p1 - p0);
+  if (delta === 0) return 0;
+  const numerator =
+    (za * Math.sqrt(p0 * (1 - p0)) + zb * Math.sqrt(p1 * (1 - p1))) ** 2;
+  return Math.ceil(numerator / delta ** 2);
+}
+
 export function calcParallelRctContinuous(
   confidenceLevel: string,
   power: string,
@@ -151,6 +180,30 @@ export function calcNonInferiority(
   return Math.ceil((2 * (za + zb) ** 2 * sd ** 2) / diff ** 2);
 }
 
+/**
+ * Non-inferiority trial for binary (proportion) outcomes.
+ * n = [zα√(2p̄(1-p̄)) + zβ√(p₁(1-p₁)+p₂(1-p₂))]² / (δ - |p₁-p₂|)²  per arm
+ * One-sided alpha used (same z_alpha convention as continuous NI).
+ */
+export function calcNonInferiorityProportion(
+  confidenceLevel: string,
+  power: string,
+  p1: number,
+  p2: number,
+  delta: number,
+): number {
+  const za = getZAlpha(confidenceLevel);
+  const zb = getZBeta(power);
+  const pBar = (p1 + p2) / 2;
+  const diff = delta - Math.abs(p1 - p2);
+  if (diff <= 0) return 0;
+  const numerator =
+    (za * Math.sqrt(2 * pBar * (1 - pBar)) +
+      zb * Math.sqrt(p1 * (1 - p1) + p2 * (1 - p2))) **
+    2;
+  return Math.ceil(numerator / diff ** 2);
+}
+
 export function calcCrossover(
   confidenceLevel: string,
   power: string,
@@ -160,6 +213,26 @@ export function calcCrossover(
   const za = getZAlpha(confidenceLevel);
   const zb = getZBeta(power);
   return Math.ceil((2 * (za + zb) ** 2 * withinSD ** 2) / meanDiff ** 2);
+}
+
+/**
+ * Crossover trial for binary (proportion) outcomes.
+ * Uses paired-proportion approach:
+ * n = 2(zα/2 + zβ)² × p̄(1-p̄) / Δ²  per sequence
+ * where p̄ = (p₁+p₂)/2, Δ = |p₁-p₂|
+ */
+export function calcCrossoverProportion(
+  confidenceLevel: string,
+  power: string,
+  p1: number,
+  p2: number,
+): number {
+  const za = getZAlpha(confidenceLevel);
+  const zb = getZBeta(power);
+  const pBar = (p1 + p2) / 2;
+  const delta = Math.abs(p1 - p2);
+  if (delta === 0) return 0;
+  return Math.ceil((2 * (za + zb) ** 2 * pBar * (1 - pBar)) / delta ** 2);
 }
 
 // ---- CLUSTER RCT ----

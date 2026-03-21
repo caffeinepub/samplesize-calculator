@@ -22,6 +22,105 @@ import { ResultsPanel } from "../ResultsPanel";
 
 type Sub = "cohort" | "casecontrol" | "means";
 
+// ---- t-distribution helpers (same as DescriptiveCalculator) ----
+function normalQuantile(p: number): number {
+  const a = [
+    -3.969683028665376e1, 2.209460984245205e2, -2.759285104469687e2,
+    1.38357751867269e2, -3.066479806614716e1, 2.506628277459239,
+  ];
+  const b = [
+    -5.447609879822406e1, 1.615858368580409e2, -1.556989798598866e2,
+    6.680131188771972e1, -1.328068155288572e1,
+  ];
+  const c = [
+    -7.784894002430293e-3, -3.223964580411365e-1, -2.400758277161838,
+    -2.549732539343734, 4.374664141464968, 2.938163982698783,
+  ];
+  const d = [
+    7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996,
+    3.754408661907416,
+  ];
+  const pLow = 0.02425;
+  const pHigh = 1 - pLow;
+  let q: number;
+  if (p < pLow) {
+    const r = Math.sqrt(-2 * Math.log(p));
+    q =
+      (((((c[0] * r + c[1]) * r + c[2]) * r + c[3]) * r + c[4]) * r + c[5]) /
+      ((((d[0] * r + d[1]) * r + d[2]) * r + d[3]) * r + 1);
+  } else if (p <= pHigh) {
+    const r = p - 0.5;
+    const s = r * r;
+    q =
+      ((((((a[0] * s + a[1]) * s + a[2]) * s + a[3]) * s + a[4]) * s + a[5]) *
+        r) /
+      (((((b[0] * s + b[1]) * s + b[2]) * s + b[3]) * s + b[4]) * s + 1);
+  } else {
+    const r = Math.sqrt(-2 * Math.log(1 - p));
+    q = -(
+      (((((c[0] * r + c[1]) * r + c[2]) * r + c[3]) * r + c[4]) * r + c[5]) /
+      ((((d[0] * r + d[1]) * r + d[2]) * r + d[3]) * r + 1)
+    );
+  }
+  return q;
+}
+
+function tQuantile(p: number, df: number): number {
+  if (df <= 0) return Number.POSITIVE_INFINITY;
+  const z = normalQuantile(p);
+  if (df >= 1000) return z;
+  const z2 = z * z;
+  const t =
+    z *
+    (1 +
+      (z2 + 1) / (4 * df) +
+      (5 * z2 * z2 + 16 * z2 + 3) / (96 * df * df) +
+      (3 * z2 * z2 * z2 + 19 * z2 * z2 + 17 * z2 - 15) / (384 * df * df * df));
+  return t;
+}
+
+interface IterationStep {
+  iteration: number;
+  df: number;
+  t: number;
+  n: number;
+}
+
+function iterateTwoMeans(
+  confidenceLevel: string,
+  power: string,
+  s: number,
+  delta: number,
+): { finalN: number; steps: IterationStep[] } {
+  const alpha = 1 - Number(confidenceLevel) / 100;
+  const beta = 1 - Number(power) / 100;
+  const pAlpha = alpha / 2;
+  const pBeta = beta;
+  const steps: IterationStep[] = [];
+
+  const z_a = getZAlpha(confidenceLevel);
+  const z_b = getZBeta(power);
+  let nPrev = Math.ceil((2 * (z_a + z_b) ** 2 * s * s) / (delta * delta));
+  if (nPrev < 2) nPrev = 2;
+
+  for (let i = 1; i <= 20; i++) {
+    const df = 2 * nPrev - 2;
+    const t_a = tQuantile(pAlpha, df);
+    const t_b = tQuantile(pBeta, df);
+    const nNew = Math.ceil((2 * (t_a + t_b) ** 2 * s * s) / (delta * delta));
+    steps.push({
+      iteration: i,
+      df,
+      t: Number.parseFloat(t_a.toFixed(4)),
+      n: nNew,
+    });
+    if (nNew === nPrev) break;
+    nPrev = nNew;
+  }
+
+  return { finalN: steps[steps.length - 1].n, steps };
+}
+
 export function AnalyticCalculator() {
   const [sub, setSub] = useState<Sub>("cohort");
   const [confidenceLevel, setConfidenceLevel] = useState("95");
@@ -34,6 +133,8 @@ export function AnalyticCalculator() {
   const [mean1, setMean1] = useState("");
   const [mean2, setMean2] = useState("");
   const [pooledSD, setPooledSD] = useState("");
+  const [sdUnknown, setSdUnknown] = useState(false);
+  const [iterSteps, setIterSteps] = useState<IterationStep[]>([]);
   const [result, setResult] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const save = useSaveCalculation();
@@ -58,6 +159,7 @@ export function AnalyticCalculator() {
         );
         desc = `CL=${confidenceLevel}%, Power=${power}%, P1=${p1v}, P2=${p2v}, ratio=${r}`;
         st = SubType.compareTwoProportionsCohort;
+        setIterSteps([]);
       } else if (sub === "casecontrol") {
         const pcv = Number.parseFloat(pControl);
         const orv = Number.parseFloat(orVal);
@@ -71,13 +173,28 @@ export function AnalyticCalculator() {
         );
         desc = `CL=${confidenceLevel}%, Power=${power}%, pCtrl=${pcv}, OR=${orv}, ratio=${r}`;
         st = SubType.compareTwoProportionsCaseControl;
+        setIterSteps([]);
       } else {
         const m1 = Number.parseFloat(mean1);
         const m2 = Number.parseFloat(mean2);
         const sd = Number.parseFloat(pooledSD);
         if (Number.isNaN(m1) || Number.isNaN(m2) || Number.isNaN(sd)) return;
-        n = calcCompareTwoMeans(confidenceLevel, power, m1, m2, sd);
-        desc = `CL=${confidenceLevel}%, Power=${power}%, M1=${m1}, M2=${m2}, SD=${sd}`;
+        const delta = Math.abs(m1 - m2);
+        if (sdUnknown) {
+          const { finalN, steps } = iterateTwoMeans(
+            confidenceLevel,
+            power,
+            sd,
+            delta,
+          );
+          n = finalN;
+          setIterSteps(steps);
+          desc = `CL=${confidenceLevel}%, Power=${power}%, M1=${m1}, M2=${m2}, SD=${sd} (t-iteration)`;
+        } else {
+          n = calcCompareTwoMeans(confidenceLevel, power, m1, m2, sd);
+          setIterSteps([]);
+          desc = `CL=${confidenceLevel}%, Power=${power}%, M1=${m1}, M2=${m2}, SD=${sd}`;
+        }
         st = SubType.compareTwoMeans;
       }
       setResult(n);
@@ -97,7 +214,9 @@ export function AnalyticCalculator() {
   const components =
     result !== null
       ? [
-          { label: "z(α/2)", value: za },
+          sub === "means" && sdUnknown
+            ? { label: "Method", value: "t-distribution (iteration)" }
+            : { label: "z(α/2)", value: za },
           { label: "z(β)", value: zb },
           { label: "Power", value: `${power}%` },
           { label: "n/group", value: String(result) },
@@ -107,7 +226,10 @@ export function AnalyticCalculator() {
   const formulas: Record<Sub, string> = {
     cohort: "n = [zα√(2p̄(1-p̄)) + zβ√(p1(1-p1)+p2(1-p2))]² / (p1-p2)²",
     casecontrol: "p_case = OR×p_ctrl / (1+(OR-1)×p_ctrl); then cohort formula",
-    means: "n = 2(zα+zβ)² × SD² / (μ1-μ2)²",
+    means:
+      sub === "means" && sdUnknown
+        ? "n₀ = 2(z_α+z_β)²s²/δ²  →  nᵢ = 2(t_α+t_β)²s²/δ²  (iterate until convergence, df=2n-2)"
+        : "n = 2(zα+zβ)² × SD² / (μ1-μ2)²",
   };
   const methodologies: Record<Sub, string> = {
     cohort:
@@ -115,7 +237,9 @@ export function AnalyticCalculator() {
     casecontrol:
       "Kelsey et al. (1996) case-control formula. The exposure proportion among cases is derived from the odds ratio and the exposure proportion among controls.",
     means:
-      "Standard two-sample t-test power formula. Pooled SD is used as the common standard deviation estimate. Assumes equal group variances.",
+      sub === "means" && sdUnknown
+        ? "Population SD is unknown; uses an iterative t-distribution approach for two independent samples. Start with z-based estimate n₀, then replace z with t(α/2, 2n-2) and t(β, 2n-2) and recompute until convergence. Requires s (estimated pooled SD) and the difference in means (δ = μ₁-μ₂)."
+        : "Standard two-sample t-test power formula. Pooled SD is used as the common standard deviation estimate. Assumes equal group variances.",
   };
 
   return (
@@ -126,6 +250,8 @@ export function AnalyticCalculator() {
           onValueChange={(v) => {
             setSub(v as Sub);
             setResult(null);
+            setIterSteps([]);
+            setSdUnknown(false);
           }}
         >
           <TabsList className="mb-4 w-full grid grid-cols-3">
@@ -297,6 +423,40 @@ export function AnalyticCalculator() {
           </TabsContent>
 
           <TabsContent value="means" className="space-y-3">
+            {/* SD known / unknown toggle */}
+            <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/40 border border-border">
+              <button
+                type="button"
+                role="switch"
+                aria-checked={sdUnknown}
+                data-ocid="analytic.sd_unknown.toggle"
+                onClick={() => {
+                  setSdUnknown(!sdUnknown);
+                  setResult(null);
+                  setIterSteps([]);
+                }}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${
+                  sdUnknown ? "bg-primary" : "bg-input"
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg ring-0 transition-transform ${
+                    sdUnknown ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+              <div>
+                <p className="text-sm font-semibold text-foreground">
+                  {sdUnknown ? "SD Unknown" : "SD Known"}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {sdUnknown
+                    ? "Uses t-distribution with iterative method"
+                    : "Uses normal (z) distribution"}
+                </p>
+              </div>
+            </div>
+
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-sm font-semibold text-foreground">
@@ -329,7 +489,7 @@ export function AnalyticCalculator() {
             </div>
             <div>
               <Label className="text-sm font-semibold text-foreground">
-                Pooled SD
+                {sdUnknown ? "Estimated Pooled SD (s)" : "Pooled SD (σ)"}
               </Label>
               <Input
                 data-ocid="analytic.sd.input"
@@ -356,14 +516,86 @@ export function AnalyticCalculator() {
         </Button>
       </div>
 
-      <ResultsPanel
-        resultN={result}
-        perGroup={true}
-        formula={formulas[sub]}
-        methodology={methodologies[sub]}
-        components={components}
-        isLoading={loading}
-      />
+      <div className="space-y-4">
+        <ResultsPanel
+          resultN={result}
+          perGroup={true}
+          formula={formulas[sub]}
+          methodology={methodologies[sub]}
+          components={components}
+          isLoading={loading}
+        />
+
+        {/* Iteration table for Two Means with unknown SD */}
+        {iterSteps.length > 0 && (
+          <div className="rounded-lg border border-border bg-muted/30 p-4">
+            <h3 className="text-sm font-bold text-foreground mb-3">
+              Iteration Steps (t-distribution convergence)
+            </h3>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="text-left py-1 px-2 font-semibold text-foreground">
+                      Iteration
+                    </th>
+                    <th className="text-left py-1 px-2 font-semibold text-foreground">
+                      df (2n-2)
+                    </th>
+                    <th className="text-left py-1 px-2 font-semibold text-foreground">
+                      t(α/2, df)
+                    </th>
+                    <th className="text-left py-1 px-2 font-semibold text-foreground">
+                      n/group
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {iterSteps.map((step) => (
+                    <tr
+                      key={step.iteration}
+                      className={`border-b border-border/50 ${
+                        step.iteration ===
+                        iterSteps[iterSteps.length - 1].iteration
+                          ? "bg-primary/10 font-bold"
+                          : ""
+                      }`}
+                    >
+                      <td className="py-1 px-2 text-foreground">
+                        {step.iteration}
+                      </td>
+                      <td className="py-1 px-2 text-foreground">{step.df}</td>
+                      <td className="py-1 px-2 text-foreground">{step.t}</td>
+                      <td className="py-1 px-2 text-foreground">{step.n}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Final converged sample size per group highlighted. z-seed: n₀ ={" "}
+              {(() => {
+                const z_a = getZAlpha(confidenceLevel);
+                const z_b = getZBeta(power);
+                const m1v = Number.parseFloat(mean1);
+                const m2v = Number.parseFloat(mean2);
+                const sdv = Number.parseFloat(pooledSD);
+                const delta = Math.abs(m1v - m2v);
+                if (
+                  !Number.isNaN(m1v) &&
+                  !Number.isNaN(m2v) &&
+                  !Number.isNaN(sdv) &&
+                  delta > 0
+                )
+                  return Math.ceil(
+                    (2 * (z_a + z_b) ** 2 * sdv * sdv) / (delta * delta),
+                  );
+                return "?";
+              })()}
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
