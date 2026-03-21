@@ -1,4 +1,9 @@
-type StudyCategory = "descriptive" | "analytic" | "clinical" | "cluster";
+type StudyCategory =
+  | "descriptive"
+  | "analytic"
+  | "clinical"
+  | "cluster"
+  | "rng";
 
 interface HeroBandProps {
   activeStudy: StudyCategory;
@@ -10,6 +15,7 @@ const PILLS: { id: StudyCategory; label: string }[] = [
   { id: "analytic", label: "Analytic Studies" },
   { id: "clinical", label: "Clinical Trials" },
   { id: "cluster", label: "Cluster RCT" },
+  { id: "rng", label: "Random Numbers" },
 ];
 
 export function HeroBand({ activeStudy, onStudyChange }: HeroBandProps) {

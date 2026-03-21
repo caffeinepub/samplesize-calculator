@@ -4,13 +4,19 @@ import { Footer } from "./components/Footer";
 import { FormulasCard } from "./components/FormulasCard";
 import { Header } from "./components/Header";
 import { HeroBand } from "./components/HeroBand";
+import { RandomNumberGenerator } from "./components/RandomNumberGenerator";
 import { RecentCalculations } from "./components/RecentCalculations";
 import { AnalyticCalculator } from "./components/calculator/AnalyticCalculator";
 import { ClinicalTrialCalculator } from "./components/calculator/ClinicalTrialCalculator";
 import { ClusterRctCalculator } from "./components/calculator/ClusterRctCalculator";
 import { DescriptiveCalculator } from "./components/calculator/DescriptiveCalculator";
 
-type StudyCategory = "descriptive" | "analytic" | "clinical" | "cluster";
+type StudyCategory =
+  | "descriptive"
+  | "analytic"
+  | "clinical"
+  | "cluster"
+  | "rng";
 
 const STUDY_TITLES: Record<StudyCategory, { title: string; subtitle: string }> =
   {
@@ -33,6 +39,11 @@ const STUDY_TITLES: Record<StudyCategory, { title: string; subtitle: string }> =
       title: "Cluster Randomised Trial",
       subtitle:
         "Calculate sample size accounting for intracluster correlation (ICC)",
+    },
+    rng: {
+      title: "Random Number Generator",
+      subtitle:
+        "Generate random integers within a specified range for research randomisation",
     },
   };
 
@@ -63,13 +74,16 @@ export default function App() {
           {activeStudy === "analytic" && <AnalyticCalculator />}
           {activeStudy === "clinical" && <ClinicalTrialCalculator />}
           {activeStudy === "cluster" && <ClusterRctCalculator />}
+          {activeStudy === "rng" && <RandomNumberGenerator />}
         </div>
 
         {/* Below calculator */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <RecentCalculations />
-          <FormulasCard />
-        </div>
+        {activeStudy !== "rng" && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <RecentCalculations />
+            <FormulasCard />
+          </div>
+        )}
       </main>
 
       <Footer />
