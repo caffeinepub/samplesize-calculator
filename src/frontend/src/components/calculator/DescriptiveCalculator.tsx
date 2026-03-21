@@ -268,7 +268,7 @@ export function DescriptiveCalculator() {
           type="button"
           data-ocid="descriptive.calculate.button"
           onClick={handleCalculate}
-          className="w-full mt-2 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+          className="w-full mt-2 bg-primary hover:bg-primary/90 text-black font-semibold"
           disabled={loading}
         >
           Calculate Sample Size

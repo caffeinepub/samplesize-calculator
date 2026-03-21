@@ -433,7 +433,7 @@ export function ClusterRctCalculator() {
             type="button"
             data-ocid="cluster.calculate.button"
             onClick={handleCalculate}
-            className="w-full mt-4 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold"
+            className="w-full mt-4 bg-primary hover:bg-primary/90 text-black font-semibold"
             disabled={loading}
           >
             Calculate Sample Size

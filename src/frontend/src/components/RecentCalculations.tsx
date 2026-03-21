@@ -69,7 +69,7 @@ export function RecentCalculations() {
             >
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold text-primary bg-primary/10 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-semibold text-foreground bg-muted px-2 py-0.5 rounded-full">
                     {STUDY_LABELS[calc.studyType] ?? calc.studyType}
                   </span>
                   <span className="text-xs text-muted-foreground truncate">

@@ -24,13 +24,17 @@ export function Footer() {
             Privacy
           </button>
         </div>
-        <p className="text-xs text-muted-foreground">
-          &copy; {year}. Built with ❤️ using{" "}
+        <p className="text-xs text-muted-foreground text-center">
+          Developed by{" "}
+          <span className="font-semibold text-foreground">
+            Resilient Health Care Academy
+          </span>{" "}
+          &nbsp;&middot;&nbsp; &copy; {year}. Built with ❤️ using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${hostname}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-primary hover:underline"
+            className="text-foreground hover:underline"
           >
             caffeine.ai
           </a>

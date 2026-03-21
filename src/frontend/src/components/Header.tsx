@@ -8,9 +8,14 @@ export function Header() {
         {/* Logo */}
         <div className="flex items-center gap-2">
           <Dna className="w-6 h-6 text-primary" />
-          <span className="text-xl font-bold text-foreground tracking-tight">
-            Bio<span className="text-primary">Size</span>
-          </span>
+          <div className="flex flex-col leading-none">
+            <span className="text-xl font-bold text-foreground tracking-tight">
+              Bio<span className="text-foreground">Size</span>
+            </span>
+            <span className="text-[10px] text-muted-foreground font-medium tracking-wide">
+              by Resilient Health Care Academy
+            </span>
+          </div>
         </div>
 
         {/* Nav */}

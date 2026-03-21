@@ -71,7 +71,7 @@ export function FormulasCard() {
       <div className="space-y-6">
         {FORMULAS.map((section) => (
           <div key={section.category}>
-            <p className="text-xs font-bold uppercase tracking-widest text-primary mb-3">
+            <p className="text-xs font-bold uppercase tracking-widest text-foreground mb-3">
               {section.category}
             </p>
             <div className="space-y-3">
@@ -80,7 +80,7 @@ export function FormulasCard() {
                   <p className="text-sm font-semibold text-foreground mb-1">
                     {item.name}
                   </p>
-                  <code className="block text-sm font-mono text-primary bg-primary/5 rounded px-2 py-1.5 mb-2">
+                  <code className="block text-sm font-mono text-foreground bg-background rounded px-2 py-1.5 mb-2">
                     {item.formula}
                   </code>
                   <p className="text-xs text-muted-foreground">{item.desc}</p>
