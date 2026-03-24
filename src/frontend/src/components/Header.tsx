@@ -10,10 +10,10 @@ export function Header() {
           <Dna className="w-6 h-6 text-primary" />
           <div className="flex flex-col leading-none">
             <span className="text-xl font-bold text-foreground tracking-tight">
-              Bio<span className="text-foreground">Size</span>
+              SampleSize Calculator
             </span>
             <span className="text-sm text-muted-foreground font-medium tracking-wide">
-              by Resilient Health Care Academy
+              By Prof PK Tyagi
             </span>
           </div>
         </div>

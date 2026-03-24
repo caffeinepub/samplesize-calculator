@@ -25,10 +25,10 @@ export function Footer() {
           </button>
         </div>
         <p className="text-sm text-muted-foreground text-center">
-          Developed by{" "}
+          By{" "}
           <span className="text-base font-semibold text-foreground">
-            Resilient Health Care Academy
-          </span>{" "}
+            Prof PK Tyagi
+          </span>
           &nbsp;&middot;&nbsp; &copy; {year}. Built with ❤️ using{" "}
           <a
             href={`https://caffeine.ai?utm_source=caffeine-footer&utm_medium=referral&utm_content=${hostname}`}
